@@ -1,19 +1,17 @@
 package com.example.filesharing.controller;
 
 import com.example.filesharing.dto.FileDtoGet;
-import com.example.filesharing.dto.FileListDto;
+import com.example.filesharing.dto.FileDtoForList;
 import com.example.filesharing.model.EditNameRequest;
 import com.example.filesharing.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -78,10 +76,19 @@ public class FileController {
         fileService.deleteFile(filename);
     }
 
+//    @GetMapping(path = "/list")
+//    public List<FileDtoForList> listFiles(@RequestParam int limit) {
+//        return fileService.listFiles(limit);
+//    }
+
     @GetMapping(path = "/list")
-    public List<FileListDto> listFiles(@RequestParam int limit) {
-        return fileService.listFiles(limit);
+    public Page<FileDtoForList> listFiles(@RequestParam Optional<String> sort,
+                                          @RequestParam Optional<Integer> page,
+                                          @RequestParam Optional<Integer> limit) {
+        return fileService.listFiles(sort, page, limit);
     }
+
+
 
 
 }

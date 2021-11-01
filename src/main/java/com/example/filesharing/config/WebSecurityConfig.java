@@ -21,7 +21,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     UserCredentialsService userCredentialsService;
     JwtRequestFilter jwtRequestFilter;
 
-
     @Autowired
     public WebSecurityConfig(UserCredentialsService userCredentialsService, JwtRequestFilter jwtRequestFilter) {
         this.userCredentialsService = userCredentialsService;

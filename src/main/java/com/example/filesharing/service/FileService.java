@@ -1,25 +1,21 @@
 package com.example.filesharing.service;
 
 import com.example.filesharing.dto.FileDtoGet;
-import com.example.filesharing.dto.FileListDto;
+import com.example.filesharing.dto.FileDtoForList;
 import com.example.filesharing.entity.File;
 import com.example.filesharing.entity.UserCredentials;
 import com.example.filesharing.model.EditNameRequest;
 import com.example.filesharing.repository.FileRepository;
+import com.example.filesharing.util.FileMapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -32,6 +28,9 @@ public class FileService {
 
     @Autowired
     FileRepository fileRepository;
+
+    @Autowired
+    FileMapperUtil fileMapperUtil;
 
     public Long uploadFile(String filename, MultipartFile multipartFile) throws IOException {
 
@@ -66,32 +65,71 @@ public class FileService {
         // https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread
     }
 
-    public List<FileListDto> listFiles(int limit) {
+//    public List<FileDtoForList> listFiles(int limit) {
+//
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Long usercredentialsId = userCredentialsService.loadUserCredentialsByUsername(username).getId();
+//
+//        List<File> files = fileRepository.findByUserCredentialsId(usercredentialsId).orElseThrow(() -> new UsernameNotFoundException("Files not found"));
+//
+//        List<FileDtoForList> filesDto = new ArrayList<>();
+//
+//        for (File file : files) {
+//
+//            FileDtoForList fileDtoForList = new FileDtoForList();
+//            fileDtoForList.setFilename(file.getName());
+//            fileDtoForList.setSize(file.getFile().length);
+//            filesDto.add(fileDtoForList);
+//
+//        }
+//
+//        return filesDto;
+//
+//    }
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Long usercredentialsId = userCredentialsService.loadUserCredentialsByUsername(username).getId();
-
-        List<File> files = fileRepository.findByUserCredentialsId(usercredentialsId).orElseThrow(() -> new UsernameNotFoundException("Files not found"));
-
-        List<FileListDto> filesDto = new ArrayList<>();
-
-        for (File file : files) {
-
-            FileListDto fileListDto = new FileListDto();
-            fileListDto.setFilename(file.getName());
-            fileListDto.setSize(file.getFile().length);
-            filesDto.add(fileListDto);
-
-        }
-
-        return filesDto;
-
-    }
+//    public List<FileDtoForList> listFiles(int limit) {
+//
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Long usercredentialsId = userCredentialsService.loadUserCredentialsByUsername(username).getId();
+//        List<File> files = fileRepository.findByUserCredentialsId(usercredentialsId).orElseThrow(() -> new UsernameNotFoundException("Files not found"));
+//
+//        List<FileDtoForList> filesDto = new ArrayList<>();
+//
+////        for (File file : files) {
+////
+////            FileDtoForList fileDtoForList = new FileDtoForList();
+////            fileDtoForList.setFilename(file.getName());
+////            fileDtoForList.setSize(file.getFile().length);
+////            filesDto.add(fileDtoForList);
+////
+////        }
+//
+//        return filesDto;
+//
+//    }
 
     public void editFilename(String oldFilename, EditNameRequest editNameRequest) {
         String newFilename = editNameRequest.getNewFilename();
         File file = fileRepository.getFileByNameEquals(oldFilename);
         file.setName(newFilename);
         fileRepository.saveAndFlush(file);
+    }
+
+    public Page<FileDtoForList> listFiles(Optional<String> sort, Optional<Integer> page, Optional<Integer> limit) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long usercredentialsId = userCredentialsService.loadUserCredentialsByUsername(username).getId();
+
+        PageRequest pageRequest = PageRequest.of(page.orElse(0), limit.orElse(10), Sort.Direction.ASC, sort.orElse("id"));
+
+        Page<File> pageFile = fileRepository.findByUserCredentialsId(usercredentialsId, pageRequest);
+
+        // TODO: тут ошибка, маппер не мапит размер файлов и когда последний раз их редактировали,
+        // чтобы это исправить, нужно менять саму сущность файла и скрипты ликвибейс
+        // добавлять размер файла и когда его последний раз редактировали
+
+        Page<FileDtoForList> pageFileDtoForList = fileMapperUtil.mapEntityPageIntoDtoPage(pageFile, FileDtoForList.class);
+
+        return pageFileDtoForList;
     }
 }
