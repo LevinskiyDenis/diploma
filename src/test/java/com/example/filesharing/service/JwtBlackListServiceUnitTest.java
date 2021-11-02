@@ -40,12 +40,12 @@ public class JwtBlackListServiceUnitTest {
     void saveInBlackList() {
 
         when(jwtUtil.extractExpiration(anyString())).thenReturn(new Date());
-        when(jwtBlackListRepository.saveInBlackList(any(JwtBlackListEntity.class))).thenReturn(jwtBlackListEntity);
+        when(jwtBlackListRepository.saveAndFlush(any(JwtBlackListEntity.class))).thenReturn(jwtBlackListEntity);
 
         JwtBlackListEntity jwtBlackListEntityActual = jwtBlackListService.saveInBlackList(anyString());
 
         assertEquals(jwtBlackListEntity, jwtBlackListEntityActual);
-        Mockito.verify(jwtBlackListRepository, Mockito.times(1)).saveInBlackList(any(JwtBlackListEntity.class));
+        Mockito.verify(jwtBlackListRepository, Mockito.times(1)).saveAndFlush(any(JwtBlackListEntity.class));
 
     }
 

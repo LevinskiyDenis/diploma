@@ -9,10 +9,6 @@ import java.util.Optional;
 @Repository
 public interface JwtBlackListRepository extends JpaRepository<JwtBlackListEntity, Long> {
 
-    default JwtBlackListEntity saveInBlackList(JwtBlackListEntity jwt) {
-        return this.saveAndFlush(jwt);
-    }
-
     Optional<JwtBlackListEntity> findByJwtEquals(String jwt);
 
 }

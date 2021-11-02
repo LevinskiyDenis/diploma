@@ -3,6 +3,8 @@ package com.example.filesharing.entity;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Entity
@@ -12,8 +14,17 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(nullable = false)
+    private long size;
+
+    @Column(nullable = false)
+    private String mimetype;
+
+    @Column(nullable = false)
+    private LocalDateTime lastedited;
 
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")
@@ -40,6 +51,30 @@ public class File {
         this.name = name;
     }
 
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public String getMimetype() {
+        return mimetype;
+    }
+
+    public void setMimetype(String mimetype) {
+        this.mimetype = mimetype;
+    }
+
+    public LocalDateTime getLastedited() {
+        return lastedited;
+    }
+
+    public void setLastedited(LocalDateTime lastedited) {
+        this.lastedited = lastedited;
+    }
+
     public byte[] getFile() {
         return file;
     }
@@ -61,6 +96,9 @@ public class File {
         return "File{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", size=" + size +
+                ", mimetype='" + mimetype + '\'' +
+                ", lastedited=" + lastedited +
                 ", file=" + Arrays.toString(file) +
                 ", userCredentials=" + userCredentials +
                 '}';

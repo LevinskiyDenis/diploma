@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -38,6 +40,9 @@ public class FileService {
 
         file.setName(filename);
         file.setFile(multipartFile.getBytes());
+        file.setSize(multipartFile.getBytes().length);
+        file.setMimetype(multipartFile.getContentType());
+        file.setLastedited(LocalDateTime.now());
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserCredentials userCredentials = userCredentialsService.loadUserCredentialsByUsername(username);
@@ -55,7 +60,7 @@ public class FileService {
 //        Path path = Paths.get("/Users/denislevinskiy/Desktop/" + file.getName());
 //        Files.write(path, data);
 
-        return new FileDtoGet(file.getFile());
+        return fileMapperUtil.mapEntityIntoDto(file, FileDtoGet.class);
     }
 
     @Transactional
@@ -65,53 +70,11 @@ public class FileService {
         // https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread
     }
 
-//    public List<FileDtoForList> listFiles(int limit) {
-//
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        Long usercredentialsId = userCredentialsService.loadUserCredentialsByUsername(username).getId();
-//
-//        List<File> files = fileRepository.findByUserCredentialsId(usercredentialsId).orElseThrow(() -> new UsernameNotFoundException("Files not found"));
-//
-//        List<FileDtoForList> filesDto = new ArrayList<>();
-//
-//        for (File file : files) {
-//
-//            FileDtoForList fileDtoForList = new FileDtoForList();
-//            fileDtoForList.setFilename(file.getName());
-//            fileDtoForList.setSize(file.getFile().length);
-//            filesDto.add(fileDtoForList);
-//
-//        }
-//
-//        return filesDto;
-//
-//    }
-
-//    public List<FileDtoForList> listFiles(int limit) {
-//
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        Long usercredentialsId = userCredentialsService.loadUserCredentialsByUsername(username).getId();
-//        List<File> files = fileRepository.findByUserCredentialsId(usercredentialsId).orElseThrow(() -> new UsernameNotFoundException("Files not found"));
-//
-//        List<FileDtoForList> filesDto = new ArrayList<>();
-//
-////        for (File file : files) {
-////
-////            FileDtoForList fileDtoForList = new FileDtoForList();
-////            fileDtoForList.setFilename(file.getName());
-////            fileDtoForList.setSize(file.getFile().length);
-////            filesDto.add(fileDtoForList);
-////
-////        }
-//
-//        return filesDto;
-//
-//    }
-
     public void editFilename(String oldFilename, EditNameRequest editNameRequest) {
         String newFilename = editNameRequest.getNewFilename();
         File file = fileRepository.getFileByNameEquals(oldFilename);
         file.setName(newFilename);
+        file.setLastedited(LocalDateTime.now());
         fileRepository.saveAndFlush(file);
     }
 
@@ -123,10 +86,6 @@ public class FileService {
         PageRequest pageRequest = PageRequest.of(page.orElse(0), limit.orElse(10), Sort.Direction.ASC, sort.orElse("id"));
 
         Page<File> pageFile = fileRepository.findByUserCredentialsId(usercredentialsId, pageRequest);
-
-        // TODO: тут ошибка, маппер не мапит размер файлов и когда последний раз их редактировали,
-        // чтобы это исправить, нужно менять саму сущность файла и скрипты ликвибейс
-        // добавлять размер файла и когда его последний раз редактировали
 
         Page<FileDtoForList> pageFileDtoForList = fileMapperUtil.mapEntityPageIntoDtoPage(pageFile, FileDtoForList.class);
 

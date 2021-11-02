@@ -46,7 +46,7 @@ public class UserCredentialsControllerTest {
 
         UserDetails received = userCredentialsService.loadUserByUsername("a");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/cloud/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"login\": \"user\", \"password\": \"pass\"}")).andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -61,7 +61,7 @@ public class UserCredentialsControllerTest {
         Mockito.when(userCredentialsService.loadUserByUsername(Mockito.anyString())).thenReturn(userDetails);
         Mockito.when(jwtUtil.generateToken(Mockito.any(UserDetails.class))).thenReturn("thisisyourjwt");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/cloud/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"login\": \"denis\", \"password\": \"12345\"}"))
                 .andDo(MockMvcResultHandlers.print())
@@ -76,12 +76,12 @@ public class UserCredentialsControllerTest {
         JwtBlackListEntity jwt = new JwtBlackListEntity(1L, "thisisjwt", System.currentTimeMillis());
         Mockito.when(jwtBlackListService.saveInBlackList(Mockito.anyString())).thenReturn(jwt);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/cloud/logout")
+        mockMvc.perform(MockMvcRequestBuilders.post("/logout")
                         .header("auth-token", "Bearer jwt"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(jwtBlackListService, Mockito.times(1)).saveInBlackList(anyString());
+       Mockito.verify(jwtBlackListService, Mockito.times(1)).saveInBlackList(anyString());
     }
 
 }

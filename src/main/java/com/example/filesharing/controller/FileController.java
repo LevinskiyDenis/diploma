@@ -5,6 +5,8 @@ import com.example.filesharing.dto.FileDtoForList;
 import com.example.filesharing.model.EditNameRequest;
 import com.example.filesharing.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -17,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 
 public class FileController {
@@ -34,27 +35,26 @@ public class FileController {
         return fileService.uploadFile(filename, file);
     }
 
-    // TODO: возвращает битые файлы
     @GetMapping(path = "file", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MultiValueMap<String, Object>> getFile(@RequestParam String filename) throws IOException {
 
-//      Способ 1: возвращает multipart с content-type: application/json
-
-        FileDtoGet fileDtoGet = fileService.getFile(filename);
-        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
-        formData.add("fileDtoGet", fileDtoGet);
-        return ResponseEntity.ok(formData);
+////      Способ 1: возвращает multipart с content-type: application/json
+//
+//        FileDtoGet fileDtoGet = fileService.getFile(filename);
+//        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
+//        formData.add("fileDtoGet", fileDtoGet);
+//        return ResponseEntity.ok(formData);
 
 //        Способ 2: возвращает multipart с хардкодным content-type: image/png
 
-//        FileDtoGet fileDtoGet = fileService.getFile(filename);
-//        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<String, Object>();
-//        ByteArrayResource byteArrayResource = new ByteArrayResource(fileDtoGet.getFile());
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.IMAGE_PNG);
-//        HttpEntity<Resource> entity = new HttpEntity<Resource>(byteArrayResource, headers);
-//        formData.add("fileDtoGet", entity);
-//        return ResponseEntity.ok(formData);
+        FileDtoGet fileDtoGet = fileService.getFile(filename);
+        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
+        ByteArrayResource byteArrayResource = new ByteArrayResource(fileDtoGet.getFile());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf(fileDtoGet.getMimetype()));
+        HttpEntity<Resource> entity = new HttpEntity<>(byteArrayResource, headers);
+        formData.add("file", entity);
+        return ResponseEntity.ok(formData);
 
 //        Способ 3: возвращает attachment с хардкодным content-type: image/png
 
@@ -76,19 +76,11 @@ public class FileController {
         fileService.deleteFile(filename);
     }
 
-//    @GetMapping(path = "/list")
-//    public List<FileDtoForList> listFiles(@RequestParam int limit) {
-//        return fileService.listFiles(limit);
-//    }
-
     @GetMapping(path = "/list")
     public Page<FileDtoForList> listFiles(@RequestParam Optional<String> sort,
                                           @RequestParam Optional<Integer> page,
                                           @RequestParam Optional<Integer> limit) {
         return fileService.listFiles(sort, page, limit);
     }
-
-
-
 
 }

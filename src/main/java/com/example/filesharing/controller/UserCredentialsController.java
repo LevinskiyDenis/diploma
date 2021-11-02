@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
-@RequestMapping
 
 public class UserCredentialsController {
 
@@ -55,7 +54,6 @@ public class UserCredentialsController {
         final String jwt = jwtUtil.generateToken(userCredentialsService.loadUserByUsername(authRequest.getLogin())); // нужны юзердетейлс, из которых метод дальше сам экстрактнет имя
         return ResponseEntity.ok(new AuthResponse(jwt));
     }
-
 
     @PostMapping(value = "/logout")
     public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response, @RequestHeader("auth-token") String authTokenHeader) {

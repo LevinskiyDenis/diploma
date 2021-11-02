@@ -20,7 +20,8 @@ public class JwtBlackListService {
 
     public JwtBlackListEntity saveInBlackList(String jwt) {
         Long exp = jwtUtil.extractExpiration(jwt).getTime();
-        return jwtBlackListRepository.saveInBlackList(new JwtBlackListEntity(jwt, exp));
+
+        return jwtBlackListRepository.saveAndFlush(new JwtBlackListEntity(jwt, exp));
     }
 
     public boolean isBlacklisted(String jwt) {

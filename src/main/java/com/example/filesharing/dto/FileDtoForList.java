@@ -1,17 +1,17 @@
 package com.example.filesharing.dto;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class FileDtoForList {
 
     private String name;
-    private int size;
+    private long size;
+    private String mimetype;
+    private LocalDateTime lastEdited;
 
     public FileDtoForList() {
-    }
-
-    public FileDtoForList(String name, int size) {
-        this.name = name;
-        this.size = size;
     }
 
     public String getName() {
@@ -22,11 +22,37 @@ public class FileDtoForList {
         this.name = name;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
+    }
+
+    public String getMimetype() {
+        return mimetype;
+    }
+
+    public void setMimetype(String mimetype) {
+        this.mimetype = mimetype;
+    }
+
+    public LocalDateTime getLastEdited() {
+        return lastEdited;
+    }
+
+    public void setLastEdited(LocalDateTime lastEdited) {
+        this.lastEdited = lastEdited;
+    }
+
+    @Override
+    public String toString() {
+        return "FileDtoForList{" +
+                "name='" + name + '\'' +
+                ", size=" + size +
+                ", mimetype='" + mimetype + '\'' +
+                ", lastEdited=" + lastEdited +
+                '}';
     }
 }

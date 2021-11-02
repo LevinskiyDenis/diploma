@@ -19,7 +19,7 @@ public class JwtBlackListRepositoryIntegrationTest extends AbstractRepositoryInt
     void saveInBlackList() {
         JwtBlackListEntity expected = new JwtBlackListEntity("savedjwt", 10L);
 
-        JwtBlackListEntity actual = jwtBlackListRepository.saveInBlackList(expected);
+        JwtBlackListEntity actual = jwtBlackListRepository.saveAndFlush(expected);
 
         Assert.assertEquals(expected, actual);
     }

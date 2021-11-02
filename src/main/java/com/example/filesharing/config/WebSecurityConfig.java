@@ -29,18 +29,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // auth.authenticationProvider(userCredentialsAuthenticationProvider).userDetailsService(userCredentialsService).passwordEncoder(bCryptPasswordEncoder());
         auth.userDetailsService(userCredentialsService).passwordEncoder(bCryptPasswordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests().anyRequest().authenticated();
-//        http.formLogin();
 
         http.csrf().disable().authorizeRequests().antMatchers("/login").permitAll().
                 anyRequest().authenticated().
                 and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.logout().logoutUrl("/dummylogout");
 
         http.cors();
 
