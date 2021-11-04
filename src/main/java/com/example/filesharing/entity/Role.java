@@ -1,10 +1,19 @@
 package com.example.filesharing.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Role {
 
     @Id
@@ -17,22 +26,8 @@ public class Role {
     @OneToMany(mappedBy = "role")
     private Set<UserCredentials> userCredentialsSet = new HashSet<>();
 
-    public Role() {
-    }
-
     public Role(Long id, String rolename) {
         this.id = id;
         this.rolename = rolename;
-    }
-
-    public String getRolename() {
-        return rolename;
-    }
-
-    @Override
-    public String toString() {
-        return "Role{" +
-                "rolename='" + rolename + '\'' +
-                '}';
     }
 }

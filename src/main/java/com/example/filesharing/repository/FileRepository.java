@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface FileRepository extends JpaRepository<File, Long> {
 
-    File getFileByNameEquals(String filename);
-
-    void deleteByNameEquals(String filename);
+    Optional<File> getFileByNameEquals(String filename);
 
     // TODO: почитать про пэйджинг, что такое countQuery и запросы https://stackoverflow.com/questions/21549480/spring-data-fetch-join-with-paging-is-not-working
 

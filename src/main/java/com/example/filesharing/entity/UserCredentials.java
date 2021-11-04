@@ -1,5 +1,6 @@
 package com.example.filesharing.entity;
 
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@NoArgsConstructor
 public class UserCredentials implements UserDetails {
 
     @Id
@@ -42,8 +44,14 @@ public class UserCredentials implements UserDetails {
     @Column(columnDefinition = "boolean default true")
     private boolean Enabled;
 
-    public UserCredentials() {
-
+    public UserCredentials(Long id, String username, String password, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        AccountNonExpired = accountNonExpired;
+        AccountNonLocked = accountNonLocked;
+        CredentialsNonExpired = credentialsNonExpired;
+        Enabled = enabled;
     }
 
     public UserCredentials(Long id, String username, String password, Role role, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled) {
@@ -55,11 +63,6 @@ public class UserCredentials implements UserDetails {
         AccountNonLocked = accountNonLocked;
         CredentialsNonExpired = credentialsNonExpired;
         Enabled = enabled;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority(role.getRolename()));
     }
 
     public Long getId() {
@@ -100,23 +103,9 @@ public class UserCredentials implements UserDetails {
         return this.Enabled;
     }
 
-    public UserCredentials(Long id, String username, String password, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        AccountNonExpired = accountNonExpired;
-        AccountNonLocked = accountNonLocked;
-        CredentialsNonExpired = credentialsNonExpired;
-        Enabled = enabled;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Arrays.asList(new SimpleGrantedAuthority(role.getRolename()));
     }
 
-    @Override
-    public String toString() {
-        return "UserCredentials{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", role=" + role +
-                '}';
-    }
 }

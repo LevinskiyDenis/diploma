@@ -8,9 +8,9 @@ import com.example.filesharing.service.UserCredentialsService;
 import com.example.filesharing.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,32 +42,22 @@ public class UserCredentialsController {
     // если это охраняет нас от атаки
     //https://blog.jdriven.com/2014/10/stateless-spring-security-part-1-stateless-csrf-protection/
 
-    @PostMapping(value = "/login", consumes = "application/json")
-    public ResponseEntity<?> authenticate(@RequestBody AuthRequest authRequest) {
-        System.out.println(authRequest);
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
-
-        final String jwt = jwtUtil.generateToken(userCredentialsService.loadUserByUsername(authRequest.getLogin())); // нужны юзердетейлс, из которых метод дальше сам экстрактнет имя
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest authRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword()));
+        final String jwt = jwtUtil.generateToken(userCredentialsService.loadUserByUsername(authRequest.getLogin()));
         return ResponseEntity.ok(new AuthResponse(jwt));
     }
 
     @PostMapping(value = "/logout")
-    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response, @RequestHeader("auth-token") String authTokenHeader) {
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response, @RequestHeader("auth-token") String authTokenHeader) {
 
-        String jwt = null;
-
-        if (authTokenHeader != null && authTokenHeader.startsWith("Bearer ")) {
-            jwt = authTokenHeader.split(" ")[1];
-        }
+        String jwt = authTokenHeader.split(" ")[1];
 
         JwtBlackListEntity jwtBlackListEntity = jwtBlackListService.saveInBlackList(jwt); // сохранили в базе логаученный jwt
 
         if (jwtBlackListEntity == null) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -76,7 +66,7 @@ public class UserCredentialsController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        return ResponseEntity.ok("Successful logout");
     }
 
 

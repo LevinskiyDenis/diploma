@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @WebMvcTest(UserCredentialsController.class)
-public class UserCredentialsControllerTest {
+public class UserCredentialsControllerUnitTest {
 
     @Autowired
     MockMvc mockMvc;

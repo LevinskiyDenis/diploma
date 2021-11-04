@@ -1,7 +1,7 @@
 package com.example.filesharing.controller;
 
-import com.example.filesharing.dto.FileDtoGet;
-import com.example.filesharing.dto.FileDtoForList;
+import com.example.filesharing.dto.FileDto;
+import com.example.filesharing.entity.File;
 import com.example.filesharing.model.EditNameRequest;
 import com.example.filesharing.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,54 +30,39 @@ public class FileController {
         this.fileService = fileService;
     }
 
-    @PostMapping(path = "/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Long uploadFile(@RequestParam String filename, @RequestParam MultipartFile file) throws IOException {
-        return fileService.uploadFile(filename, file);
+    @PostMapping(path = "/file", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FileDto> uploadFile(@RequestParam String filename, @RequestParam MultipartFile file) throws IOException {
+        FileDto savedFile = fileService.uploadFile(filename, file);
+        return new ResponseEntity<>(savedFile, HttpStatus.OK);
     }
 
     @GetMapping(path = "file", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MultiValueMap<String, Object>> getFile(@RequestParam String filename) throws IOException {
 
-////      Способ 1: возвращает multipart с content-type: application/json
-//
-//        FileDtoGet fileDtoGet = fileService.getFile(filename);
-//        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
-//        formData.add("fileDtoGet", fileDtoGet);
-//        return ResponseEntity.ok(formData);
-
-//        Способ 2: возвращает multipart с хардкодным content-type: image/png
-
-        FileDtoGet fileDtoGet = fileService.getFile(filename);
+        File file = fileService.getFile(filename);
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
-        ByteArrayResource byteArrayResource = new ByteArrayResource(fileDtoGet.getFile());
+        ByteArrayResource byteArrayResource = new ByteArrayResource(file.getFile());
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(fileDtoGet.getMimetype()));
+        headers.setContentType(MediaType.valueOf(file.getMimetype()));
+        headers.setContentLength(file.getSize());
         HttpEntity<Resource> entity = new HttpEntity<>(byteArrayResource, headers);
         formData.add("file", entity);
         return ResponseEntity.ok(formData);
 
-//        Способ 3: возвращает attachment с хардкодным content-type: image/png
-
-//        FileDtoGet fileDtoGet = fileService.getFile(filename);
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.parseMediaType(MediaType.IMAGE_PNG_VALUE))
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "name" + "\"")
-//                .body(new ByteArrayResource(fileDtoGet.getFile()));
-
     }
 
     @PutMapping(path = "file", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void editFilename(@RequestParam("filename") String oldFilename, @RequestBody EditNameRequest editNameRequest) {
+    public void editFilename(@RequestParam("filename") String oldFilename, @RequestBody EditNameRequest editNameRequest) throws FileNotFoundException {
         fileService.editFilename(oldFilename, editNameRequest);
     }
 
     @DeleteMapping(path = "file")
-    public void deleteFile(@RequestParam String filename) {
+    public void deleteFile(@RequestParam String filename) throws FileNotFoundException {
         fileService.deleteFile(filename);
     }
 
     @GetMapping(path = "/list")
-    public Page<FileDtoForList> listFiles(@RequestParam Optional<String> sort,
+    public Page<FileDto> listFiles(@RequestParam Optional<String> sort,
                                           @RequestParam Optional<Integer> page,
                                           @RequestParam Optional<Integer> limit) {
         return fileService.listFiles(sort, page, limit);

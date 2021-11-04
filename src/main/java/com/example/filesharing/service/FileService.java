@@ -1,7 +1,6 @@
 package com.example.filesharing.service;
 
-import com.example.filesharing.dto.FileDtoGet;
-import com.example.filesharing.dto.FileDtoForList;
+import com.example.filesharing.dto.FileDto;
 import com.example.filesharing.entity.File;
 import com.example.filesharing.entity.UserCredentials;
 import com.example.filesharing.model.EditNameRequest;
@@ -15,8 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -34,10 +33,9 @@ public class FileService {
     @Autowired
     FileMapperUtil fileMapperUtil;
 
-    public Long uploadFile(String filename, MultipartFile multipartFile) throws IOException {
+    public FileDto uploadFile(String filename, MultipartFile multipartFile) throws IOException {
 
         File file = new File();
-
         file.setName(filename);
         file.setFile(multipartFile.getBytes());
         file.setSize(multipartFile.getBytes().length);
@@ -48,37 +46,32 @@ public class FileService {
         UserCredentials userCredentials = userCredentialsService.loadUserCredentialsByUsername(username);
         file.setUserCredentials(userCredentials);
 
-        return fileRepository.saveAndFlush(file).getId();
+        File savedFile = fileRepository.saveAndFlush(file);
+
+        return fileMapperUtil.mapEntityIntoDto(savedFile, FileDto.class);
     }
 
-    public FileDtoGet getFile(String filename) throws IOException {
-
-        File file = fileRepository.getFileByNameEquals(filename);
-
-//        TODO: код ниже нормально сохраняет файлы, но при передаче через контроллер файлы становятся битыми: сохраняются, но не открываются
-//        byte[] data = file.getFile();
-//        Path path = Paths.get("/Users/denislevinskiy/Desktop/" + file.getName());
-//        Files.write(path, data);
-
-        return fileMapperUtil.mapEntityIntoDto(file, FileDtoGet.class);
+    public File getFile(String filename) throws FileNotFoundException {
+        return fileRepository.getFileByNameEquals(filename).orElseThrow(FileNotFoundException::new);
     }
 
     @Transactional
-    public void deleteFile(String filename) {
-        fileRepository.deleteByNameEquals(filename);
+    public void deleteFile(String filename) throws FileNotFoundException {
 
+        File file = fileRepository.getFileByNameEquals(filename).orElseThrow(FileNotFoundException::new);
+        fileRepository.deleteById(file.getId());
         // https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread
     }
 
-    public void editFilename(String oldFilename, EditNameRequest editNameRequest) {
+    public void editFilename(String oldFilename, EditNameRequest editNameRequest) throws FileNotFoundException {
         String newFilename = editNameRequest.getNewFilename();
-        File file = fileRepository.getFileByNameEquals(oldFilename);
+        File file = fileRepository.getFileByNameEquals(oldFilename).orElseThrow(FileNotFoundException::new);
         file.setName(newFilename);
         file.setLastedited(LocalDateTime.now());
         fileRepository.saveAndFlush(file);
     }
 
-    public Page<FileDtoForList> listFiles(Optional<String> sort, Optional<Integer> page, Optional<Integer> limit) {
+    public Page<FileDto> listFiles(Optional<String> sort, Optional<Integer> page, Optional<Integer> limit) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Long usercredentialsId = userCredentialsService.loadUserCredentialsByUsername(username).getId();
@@ -87,8 +80,6 @@ public class FileService {
 
         Page<File> pageFile = fileRepository.findByUserCredentialsId(usercredentialsId, pageRequest);
 
-        Page<FileDtoForList> pageFileDtoForList = fileMapperUtil.mapEntityPageIntoDtoPage(pageFile, FileDtoForList.class);
-
-        return pageFileDtoForList;
+        return fileMapperUtil.mapEntityPageIntoDtoPage(pageFile, FileDto.class);
     }
 }
