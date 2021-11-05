@@ -3,6 +3,7 @@ package com.example.filesharing.service;
 import com.example.filesharing.entity.JwtBlackListEntity;
 import com.example.filesharing.repository.JwtBlackListRepository;
 import com.example.filesharing.util.JwtUtil;
+import io.jsonwebtoken.lang.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -55,8 +56,9 @@ public class JwtBlackListServiceUnitTest {
 
         when(jwtBlackListRepository.findByJwtEquals(anyString())).thenReturn(Optional.of(jwtBlackListEntity));
 
-        jwtBlackListService.isBlacklisted(anyString());
+        boolean actual = jwtBlackListService.isBlacklisted(anyString());
 
+        Assert.isTrue(actual);
         Mockito.verify(jwtBlackListRepository, Mockito.times(1)).findByJwtEquals(anyString());
 
     }

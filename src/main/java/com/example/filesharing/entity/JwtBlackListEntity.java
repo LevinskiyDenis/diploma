@@ -29,4 +29,17 @@ public class JwtBlackListEntity {
         this.jwt = jwt;
         this.exp = exp;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JwtBlackListEntity jwtBlackListEntity = (JwtBlackListEntity) o;
+        return jwt.equals(jwtBlackListEntity.jwt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(jwt);
+    }
 }

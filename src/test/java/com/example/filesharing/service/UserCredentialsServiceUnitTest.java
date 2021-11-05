@@ -1,6 +1,5 @@
 package com.example.filesharing.service;
 
-
 import com.example.filesharing.entity.UserCredentials;
 import com.example.filesharing.repository.UserCredentialsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +26,6 @@ public class UserCredentialsServiceUnitTest {
 
     @Mock
     UserCredentialsRepository userCredentialsRepository;
-
 
     @BeforeEach
     void setUp() {
@@ -57,6 +55,32 @@ public class UserCredentialsServiceUnitTest {
                     userCredentialsService.loadUserByUsername(anyString());
                 }
 
+        );
+
+    }
+
+    @Test
+    void loadUserCredentialsByUsername() {
+
+        UserCredentials userCredentialsExpected = new UserCredentials(1L, "Denis", "pass", true, true, true, true);
+        when(userCredentialsRepository.findUserCredentialsByUsernameEquals(anyString())).thenReturn(Optional.of(userCredentialsExpected));
+
+        UserCredentials userCredentialsActual = userCredentialsService.loadUserCredentialsByUsername(anyString());
+
+        Mockito.verify(userCredentialsRepository, Mockito.times(1)).findUserCredentialsByUsernameEquals(anyString());
+        assertEquals(userCredentialsExpected, userCredentialsActual);
+
+    }
+
+    @Test
+    void loadUserCredentialsByUsername_UsernameNotFoundException() {
+
+        when(userCredentialsRepository.findUserCredentialsByUsernameEquals(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(UsernameNotFoundException.class,
+                () -> {
+                    userCredentialsService.loadUserCredentialsByUsername(anyString());
+                }
         );
 
     }

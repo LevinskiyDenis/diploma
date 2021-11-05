@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,16 +36,7 @@ public class FileService {
 
     public FileDto uploadFile(String filename, MultipartFile multipartFile) throws IOException {
 
-        File file = new File();
-        file.setName(filename);
-        file.setFile(multipartFile.getBytes());
-        file.setSize(multipartFile.getBytes().length);
-        file.setMimetype(multipartFile.getContentType());
-        file.setLastedited(LocalDateTime.now());
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserCredentials userCredentials = userCredentialsService.loadUserCredentialsByUsername(username);
-        file.setUserCredentials(userCredentials);
+        File file = createFileFromRequest(filename, multipartFile);
 
         File savedFile = fileRepository.saveAndFlush(file);
 
@@ -81,5 +73,19 @@ public class FileService {
         Page<File> pageFile = fileRepository.findByUserCredentialsId(usercredentialsId, pageRequest);
 
         return fileMapperUtil.mapEntityPageIntoDtoPage(pageFile, FileDto.class);
+    }
+
+    File createFileFromRequest(String filename, MultipartFile multipartFile) throws IOException {
+        File file = new File();
+        file.setName(filename);
+        file.setFile(multipartFile.getBytes());
+        file.setSize(multipartFile.getBytes().length);
+        file.setMimetype(multipartFile.getContentType());
+        file.setLastedited(LocalDateTime.now());
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserCredentials userCredentials = userCredentialsService.loadUserCredentialsByUsername(username);
+        file.setUserCredentials(userCredentials);
+        return file;
     }
 }

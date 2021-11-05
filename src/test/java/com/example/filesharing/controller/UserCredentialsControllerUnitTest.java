@@ -44,8 +44,6 @@ public class UserCredentialsControllerUnitTest {
         Mockito.when(userCredentialsService.loadUserByUsername(Mockito.anyString())).thenReturn(userDetails);
         Mockito.when(jwtUtil.generateToken(Mockito.any(UserDetails.class))).thenReturn("thisisyourjwt");
 
-        UserDetails received = userCredentialsService.loadUserByUsername("a");
-
         mockMvc.perform(MockMvcRequestBuilders.post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"login\": \"user\", \"password\": \"pass\"}")).andDo(MockMvcResultHandlers.print())
