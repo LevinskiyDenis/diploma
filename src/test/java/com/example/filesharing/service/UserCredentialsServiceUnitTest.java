@@ -33,17 +33,17 @@ public class UserCredentialsServiceUnitTest {
     @Test
     void loadUserByUsername() {
         UserDetails userDetailsExpected = new UserCredentials(1L, "Denis", "pass", true, true, true, true);
-        when(userCredentialsRepository.findByUsernameEquals(anyString())).thenReturn(java.util.Optional.of(userDetailsExpected));
+        when(userCredentialsRepository.findUserDetailsByUsernameEquals(anyString())).thenReturn(java.util.Optional.of(userDetailsExpected));
 
         userCredentialsService.loadUserByUsername(anyString());
 
-        verify(userCredentialsRepository, times(1)).findByUsernameEquals(any());
+        verify(userCredentialsRepository, times(1)).findUserDetailsByUsernameEquals(any());
     }
 
     @Test
     void loadUserByUsername_UsernameNotFoundException() {
 
-        when(userCredentialsRepository.findByUsernameEquals(anyString())).thenReturn(Optional.empty());
+        when(userCredentialsRepository.findUserDetailsByUsernameEquals(anyString())).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class,
 

@@ -13,12 +13,12 @@ import java.util.Optional;
 @Repository
 public interface FileRepository extends JpaRepository<File, Long> {
 
-    Optional<File> getFileByNameEquals(String filename);
+    Optional<File> findFileByNameEquals(String filename);
 
     // TODO: почитать про пэйджинг, что такое countQuery и запросы https://stackoverflow.com/questions/21549480/spring-data-fetch-join-with-paging-is-not-working
 
     @Query(value = "from File f inner join fetch f.userCredentials where f.userCredentials.id = :id",
             countQuery = "select count(f) from File f where f.userCredentials.id = :id")
-    Page<File> findByUserCredentialsId(@Param("id") Long id, Pageable pageable);
+    Page<File> findFilesByUserCredentialsId(@Param("id") Long id, Pageable pageable);
 
 }

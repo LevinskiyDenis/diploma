@@ -71,31 +71,31 @@ public class FileServiceUnitTest {
 
     @Test
     void getFile() throws FileNotFoundException {
-        when(fileRepository.getFileByNameEquals(anyString())).thenReturn(Optional.of(file));
+        when(fileRepository.findFileByNameEquals(anyString())).thenReturn(Optional.of(file));
 
         fileService.getFile(file.getName());
 
-        verify(fileRepository, times(1)).getFileByNameEquals(anyString());
+        verify(fileRepository, times(1)).findFileByNameEquals(anyString());
     }
 
     @Test
     void deleteFile() throws FileNotFoundException {
-        when(fileRepository.getFileByNameEquals(anyString())).thenReturn(Optional.of(file));
+        when(fileRepository.findFileByNameEquals(anyString())).thenReturn(Optional.of(file));
 
         fileService.deleteFile(file.getName());
 
-        verify(fileRepository, times(1)).getFileByNameEquals(anyString());
+        verify(fileRepository, times(1)).findFileByNameEquals(anyString());
         verify(fileRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
     void editFilename() throws FileNotFoundException {
-        when(fileRepository.getFileByNameEquals(anyString())).thenReturn(Optional.of(file));
+        when(fileRepository.findFileByNameEquals(anyString())).thenReturn(Optional.of(file));
         when(fileUtil.editFilename(any(), anyString())).thenReturn(file);
 
         fileService.editFilename("oldname", new EditNameRequest("newname"));
 
-        verify(fileRepository, times(1)).getFileByNameEquals(any());
+        verify(fileRepository, times(1)).findFileByNameEquals(any());
         verify(fileUtil, times(1)).editFilename(any(), anyString());
         verify(fileRepository, times(1)).saveAndFlush(any());
     }
@@ -104,14 +104,14 @@ public class FileServiceUnitTest {
     void listFiles() {
         when(fileUtil.getFileOwnerUserCredentialsId()).thenReturn(1L);
         Page<File> pageFile = new PageImpl<>(List.of(file));
-        when(fileRepository.findByUserCredentialsId(anyLong(), any())).thenReturn(pageFile);
+        when(fileRepository.findFilesByUserCredentialsId(anyLong(), any())).thenReturn(pageFile);
         Page<Object> pageObject = new PageImpl<>(List.of(new Object()));
         when(mapperUtil.mapEntityPageIntoDtoPage(any(), any())).thenReturn(pageObject);
 
         fileService.listFiles(Optional.empty(), Optional.empty(), Optional.of(3));
 
         verify(fileUtil, times(1)).getFileOwnerUserCredentialsId();
-        verify(fileRepository, times(1)).findByUserCredentialsId(anyLong(), any());
+        verify(fileRepository, times(1)).findFilesByUserCredentialsId(anyLong(), any());
         verify(mapperUtil, times(1)).mapEntityPageIntoDtoPage(any(), any());
     }
 

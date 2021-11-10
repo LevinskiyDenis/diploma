@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserCredentialsRepository extends JpaRepository<UserCredentials, Long> {
 
     @Query("select u from UserCredentials u join fetch u.role where u.username = :username")
-    Optional<UserDetails> findByUsernameEquals(@Param("username") String username);
+    Optional<UserDetails> findUserDetailsByUsernameEquals(@Param("username") String username);
 
     Optional<UserCredentials> findUserCredentialsByUsernameEquals(String username);
 

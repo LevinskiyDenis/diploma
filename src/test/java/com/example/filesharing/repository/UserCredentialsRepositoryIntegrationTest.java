@@ -1,7 +1,6 @@
 package com.example.filesharing.repository;
 
 import com.example.filesharing.AbstractRepositoryIntegrationTest;
-import com.example.filesharing.entity.Role;
 import com.example.filesharing.entity.UserCredentials;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,7 @@ public class UserCredentialsRepositoryIntegrationTest extends AbstractRepository
         Optional<UserDetails> userDetailsExpected = Optional.of(new UserCredentials(1L, "denis", "$2a$10$16B7PJ4TXPHpFXl4pOmI2.aL/3RmDdP6WDdO2HHCjI2ui7Xzng3wC",
                 true, true, true, true));
 
-        Optional<UserDetails> userDetailsActual = userCredentialsRepository.findByUsernameEquals("denis");
+        Optional<UserDetails> userDetailsActual = userCredentialsRepository.findUserDetailsByUsernameEquals("denis");
 
         Assertions.assertThat(userDetailsActual).usingRecursiveComparison().ignoringFields("value.id", "value.role").isEqualTo(userDetailsExpected);
     }

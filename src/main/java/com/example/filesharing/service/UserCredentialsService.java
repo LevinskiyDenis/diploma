@@ -21,7 +21,7 @@ public class UserCredentialsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return userCredentialsRepository.findByUsernameEquals(s).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        return userCredentialsRepository.findUserDetailsByUsernameEquals(s).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     public UserCredentials loadUserCredentialsByUsername(String username) throws UsernameNotFoundException {

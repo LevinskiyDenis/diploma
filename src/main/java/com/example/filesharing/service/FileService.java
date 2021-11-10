@@ -40,18 +40,18 @@ public class FileService {
     }
 
     public File getFile(String filename) throws FileNotFoundException {
-        return fileRepository.getFileByNameEquals(filename).orElseThrow(FileNotFoundException::new);
+        return fileRepository.findFileByNameEquals(filename).orElseThrow(FileNotFoundException::new);
     }
 
     @Transactional
     public void deleteFile(String filename) throws FileNotFoundException {
-        File file = fileRepository.getFileByNameEquals(filename).orElseThrow(FileNotFoundException::new);
+        File file = fileRepository.findFileByNameEquals(filename).orElseThrow(FileNotFoundException::new);
         fileRepository.deleteById(file.getId());
         // https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread
     }
 
     public void editFilename(String oldFilename, EditNameRequest editNameRequest) throws FileNotFoundException {
-        File file = fileRepository.getFileByNameEquals(oldFilename).orElseThrow(FileNotFoundException::new);
+        File file = fileRepository.findFileByNameEquals(oldFilename).orElseThrow(FileNotFoundException::new);
         File withNewFilename = fileUtil.editFilename(file, editNameRequest.getNewFilename());
         fileRepository.saveAndFlush(withNewFilename);
     }
@@ -61,7 +61,7 @@ public class FileService {
 
         PageRequest pageRequest = PageRequest.of(page.orElse(0), limit.orElse(10), Sort.Direction.ASC, sort.orElse("id"));
 
-        Page<File> pageFile = fileRepository.findByUserCredentialsId(userCredentialsId, pageRequest);
+        Page<File> pageFile = fileRepository.findFilesByUserCredentialsId(userCredentialsId, pageRequest);
 
         return mapperUtil.mapEntityPageIntoDtoPage(pageFile, FileDto.class);
     }
