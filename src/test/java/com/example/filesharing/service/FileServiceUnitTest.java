@@ -5,6 +5,7 @@ import com.example.filesharing.entity.File;
 import com.example.filesharing.model.EditNameRequest;
 import com.example.filesharing.repository.FileRepository;
 import com.example.filesharing.util.FileUtil;
+import com.example.filesharing.util.MapperUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -33,6 +34,9 @@ public class FileServiceUnitTest {
     @Mock
     FileUtil fileUtil;
 
+    @Mock
+    MapperUtil mapperUtil;
+
     File file;
 
     @BeforeEach
@@ -56,13 +60,13 @@ public class FileServiceUnitTest {
 
         when(fileUtil.createFileFromRequest(any(), any())).thenReturn(file);
         when(fileRepository.saveAndFlush(any())).thenReturn(file);
-        when(fileUtil.mapEntityIntoDto(any(), any())).thenReturn(new FileDto());
+        when(mapperUtil.mapEntityIntoDto(any(), any())).thenReturn(new FileDto());
 
         fileService.uploadFile(mockMultipartFile.getName(), mockMultipartFile);
 
         verify(fileUtil, times(1)).createFileFromRequest(any(), any());
         verify(fileRepository, times(1)).saveAndFlush(any());
-        verify(fileUtil, times(1)).mapEntityIntoDto(any(), any());
+        verify(mapperUtil, times(1)).mapEntityIntoDto(any(), any());
     }
 
     @Test
@@ -102,13 +106,13 @@ public class FileServiceUnitTest {
         Page<File> pageFile = new PageImpl<>(List.of(file));
         when(fileRepository.findByUserCredentialsId(anyLong(), any())).thenReturn(pageFile);
         Page<Object> pageObject = new PageImpl<>(List.of(new Object()));
-        when(fileUtil.mapEntityPageIntoDtoPage(any(), any())).thenReturn(pageObject);
+        when(mapperUtil.mapEntityPageIntoDtoPage(any(), any())).thenReturn(pageObject);
 
         fileService.listFiles(Optional.empty(), Optional.empty(), Optional.of(3));
 
         verify(fileUtil, times(1)).getFileOwnerUserCredentialsId();
         verify(fileRepository, times(1)).findByUserCredentialsId(anyLong(), any());
-        verify(fileUtil, times(1)).mapEntityPageIntoDtoPage(any(), any());
+        verify(mapperUtil, times(1)).mapEntityPageIntoDtoPage(any(), any());
     }
 
 }

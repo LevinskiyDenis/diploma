@@ -17,21 +17,7 @@ import java.time.LocalDateTime;
 public class FileUtil {
 
     @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
     UserCredentialsService userCredentialsService;
-
-    // TODO: FileUtil отдельно, а мапперские методы отдельно в класс MapperUtil
-
-    public <T, D> Page<D> mapEntityPageIntoDtoPage(Page<T> entities, Class<D> dtoClass) {
-        Page<D> map = entities.map(objectEntity -> modelMapper.map(objectEntity, dtoClass));
-        return map;
-    }
-
-    public <T, D> D mapEntityIntoDto(T t, Class<D> dtoClass) {
-        return modelMapper.map(t, dtoClass);
-    }
 
     public File createFileFromRequest(String filename, MultipartFile multipartFile) throws IOException {
         File file = new File();
