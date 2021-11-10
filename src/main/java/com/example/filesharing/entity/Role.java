@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -29,5 +30,18 @@ public class Role {
     public Role(Long id, String rolename) {
         this.id = id;
         this.rolename = rolename;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return rolename.equals(role.rolename);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rolename);
     }
 }

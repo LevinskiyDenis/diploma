@@ -15,7 +15,7 @@ public abstract class AbstractRepositoryIntegrationTest {
     public static final PostgreSQLContainer container;
 
     static {
-        container = (PostgreSQLContainer) new PostgreSQLContainer("postgres").withUsername("user").withPassword("pass");
+        container = new PostgreSQLContainer("postgres").withUsername("user").withPassword("pass");
         container.start();
     }
 

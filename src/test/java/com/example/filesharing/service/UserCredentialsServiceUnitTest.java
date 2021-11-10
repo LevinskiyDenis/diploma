@@ -6,17 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.*;
 
 
 public class UserCredentialsServiceUnitTest {
@@ -29,19 +27,17 @@ public class UserCredentialsServiceUnitTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        openMocks(this);
     }
 
     @Test
     void loadUserByUsername() {
-
         UserDetails userDetailsExpected = new UserCredentials(1L, "Denis", "pass", true, true, true, true);
         when(userCredentialsRepository.findByUsernameEquals(anyString())).thenReturn(java.util.Optional.of(userDetailsExpected));
 
-        UserDetails userDetailsActual = userCredentialsService.loadUserByUsername(anyString());
+        userCredentialsService.loadUserByUsername(anyString());
 
-        Mockito.verify(userCredentialsRepository, Mockito.times(1)).findByUsernameEquals(any());
-        assertEquals(userDetailsExpected, userDetailsActual);
+        verify(userCredentialsRepository, times(1)).findByUsernameEquals(any());
     }
 
     @Test
@@ -61,15 +57,12 @@ public class UserCredentialsServiceUnitTest {
 
     @Test
     void loadUserCredentialsByUsername() {
-
         UserCredentials userCredentialsExpected = new UserCredentials(1L, "Denis", "pass", true, true, true, true);
         when(userCredentialsRepository.findUserCredentialsByUsernameEquals(anyString())).thenReturn(Optional.of(userCredentialsExpected));
 
-        UserCredentials userCredentialsActual = userCredentialsService.loadUserCredentialsByUsername(anyString());
+        userCredentialsService.loadUserCredentialsByUsername(anyString());
 
-        Mockito.verify(userCredentialsRepository, Mockito.times(1)).findUserCredentialsByUsernameEquals(anyString());
-        assertEquals(userCredentialsExpected, userCredentialsActual);
-
+        verify(userCredentialsRepository, times(1)).findUserCredentialsByUsernameEquals(anyString());
     }
 
     @Test

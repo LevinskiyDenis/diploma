@@ -3,7 +3,6 @@ package com.example.filesharing.repository;
 import com.example.filesharing.AbstractRepositoryIntegrationTest;
 import com.example.filesharing.entity.JwtBlackListEntity;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -14,15 +13,6 @@ public class JwtBlackListRepositoryIntegrationTest extends AbstractRepositoryInt
 
     @Autowired
     JwtBlackListRepository jwtBlackListRepository;
-
-    @Test
-    void saveInBlackList() {
-        JwtBlackListEntity expected = new JwtBlackListEntity("savedjwt", 10L);
-
-        JwtBlackListEntity actual = jwtBlackListRepository.saveAndFlush(expected);
-
-        Assert.assertEquals(expected, actual);
-    }
 
     @Test
     @Sql("/sql/insertJwtBlackListEntity.sql")

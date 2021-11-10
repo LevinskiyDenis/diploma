@@ -1,4 +1,4 @@
-package com.example.filesharing.filters;
+package com.example.filesharing.filter;
 
 import com.example.filesharing.service.JwtBlackListService;
 import com.example.filesharing.service.UserCredentialsService;

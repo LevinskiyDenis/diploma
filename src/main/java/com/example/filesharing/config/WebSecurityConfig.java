@@ -1,6 +1,6 @@
 package com.example.filesharing.config;
 
-import com.example.filesharing.filters.JwtRequestFilter;
+import com.example.filesharing.filter.JwtRequestFilter;
 import com.example.filesharing.service.UserCredentialsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

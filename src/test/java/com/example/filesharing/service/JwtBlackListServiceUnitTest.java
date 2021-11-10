@@ -8,15 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.*;
 
 public class JwtBlackListServiceUnitTest {
 
@@ -33,33 +31,28 @@ public class JwtBlackListServiceUnitTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        openMocks(this);
         jwtBlackListEntity = new JwtBlackListEntity("a", 1L);
     }
 
     @Test
     void saveInBlackList() {
-
         when(jwtUtil.extractExpiration(anyString())).thenReturn(new Date());
         when(jwtBlackListRepository.saveAndFlush(any(JwtBlackListEntity.class))).thenReturn(jwtBlackListEntity);
 
-        JwtBlackListEntity jwtBlackListEntityActual = jwtBlackListService.saveInBlackList(anyString());
+        jwtBlackListService.saveInBlackList(anyString());
 
-        assertEquals(jwtBlackListEntity, jwtBlackListEntityActual);
-        Mockito.verify(jwtBlackListRepository, Mockito.times(1)).saveAndFlush(any(JwtBlackListEntity.class));
-
+        verify(jwtUtil, times(1)).extractExpiration(anyString());
+        verify(jwtBlackListRepository, times(1)).saveAndFlush(any(JwtBlackListEntity.class));
     }
 
 
     @Test
     void isBlacklisted() {
-
         when(jwtBlackListRepository.findByJwtEquals(anyString())).thenReturn(Optional.of(jwtBlackListEntity));
 
-        boolean actual = jwtBlackListService.isBlacklisted(anyString());
+        jwtBlackListService.isBlacklisted(anyString());
 
-        Assert.isTrue(actual);
-        Mockito.verify(jwtBlackListRepository, Mockito.times(1)).findByJwtEquals(anyString());
-
+        verify(jwtBlackListRepository, times(1)).findByJwtEquals(anyString());
     }
 }

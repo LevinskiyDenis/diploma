@@ -2,7 +2,7 @@ package com.example.filesharing.controller;
 
 import com.example.filesharing.dto.FileDto;
 import com.example.filesharing.entity.File;
-import com.example.filesharing.filters.JwtRequestFilter;
+import com.example.filesharing.filter.JwtRequestFilter;
 import com.example.filesharing.model.EditNameRequest;
 import com.example.filesharing.service.FileService;
 import com.example.filesharing.service.UserCredentialsService;
@@ -18,19 +18,16 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @WebMvcTest(value = FileController.class)
@@ -53,7 +50,7 @@ public class FileControllerUnitTest {
     void uploadFile() throws Exception {
 
         FileDto fileDto = new FileDto(1L, "file", 10L, MediaType.TEXT_PLAIN_VALUE, LocalDateTime.now());
-        Mockito.when(fileService.uploadFile(anyString(), any(MultipartFile.class))).thenReturn(fileDto);
+        when(fileService.uploadFile(anyString(), Mockito.any(MultipartFile.class))).thenReturn(fileDto);
 
         MockMultipartFile mockMultipartFile
                 = new MockMultipartFile(
@@ -65,15 +62,15 @@ public class FileControllerUnitTest {
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/file").file(mockMultipartFile)
                         .param("filename", "myfile"))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(fileDto.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(fileDto.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(fileDto.getSize()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.mimetype").value(fileDto.getMimetype()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lastedited").exists());
+                .andExpect(jsonPath("$.id").value(fileDto.getId()))
+                .andExpect(jsonPath("$.name").value(fileDto.getName()))
+                .andExpect(jsonPath("$.size").value(fileDto.getSize()))
+                .andExpect(jsonPath("$.mimetype").value(fileDto.getMimetype()))
+                .andExpect(jsonPath("$.lastedited").exists());
 
-        Mockito.verify(fileService, Mockito.times(1)).uploadFile(anyString(), any(MultipartFile.class));
+        verify(fileService, times(1)).uploadFile(anyString(), Mockito.any(MultipartFile.class));
     }
 
     @Test
@@ -84,17 +81,17 @@ public class FileControllerUnitTest {
         file.setMimetype(MediaType.TEXT_PLAIN_VALUE);
         file.setFile("Hello".getBytes());
 
-        Mockito.when(fileService.getFile(anyString())).thenReturn(file);
+        when(fileService.getFile(anyString())).thenReturn(file);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/file").param("filename", "filetodownload")
                 )
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(content().string(containsString("Hello")))
                 .andExpect(status().isOk());
 
-        Mockito.verify(fileService, Mockito.times(1)).getFile(anyString());
+        verify(fileService, times(1)).getFile(anyString());
     }
 
     @Test
@@ -104,10 +101,10 @@ public class FileControllerUnitTest {
                         .param("filename", "old")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"filename\": \"new\"}"))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk());
 
-        Mockito.verify(fileService, Mockito.times(1)).editFilename(anyString(), any(EditNameRequest.class));
+        verify(fileService, times(1)).editFilename(anyString(), Mockito.any(EditNameRequest.class));
     }
 
     @Test
@@ -115,27 +112,26 @@ public class FileControllerUnitTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/file")
                         .param("filename", "filetodelete"))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isOk());
 
-        Mockito.verify(fileService, Mockito.times(1)).deleteFile(anyString());
+        verify(fileService, times(1)).deleteFile(anyString());
     }
 
     @Test
     void listFiles() throws Exception {
 
         // TODO: можно как-то через стримы-лямбды нагенерить больше дто
-        // TODO: контроллер готов, дальше к юнит тесту сервиса надо приступать
 
         FileDto fileDto = new FileDto(1L, "file", 10L, MediaType.TEXT_PLAIN_VALUE, LocalDateTime.now());
 
         Page<FileDto> page = new PageImpl<>(Arrays.asList(fileDto));
 
-        Mockito.when(fileService.listFiles(any(), any(), any())).thenReturn(page);
+        when(fileService.listFiles(any(), any(), any())).thenReturn(page);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/list")).andDo(MockMvcResultHandlers.print())
+        mockMvc.perform(MockMvcRequestBuilders.get("/list")).andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content", hasSize(1)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(1)));
     }
 }

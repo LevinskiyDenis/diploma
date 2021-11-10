@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -38,5 +39,18 @@ public class File {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_credentials_id", referencedColumnName = "id")
     private UserCredentials userCredentials;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        File fileobj = (File) o;
+        return name.equals(fileobj.name) && file.equals(fileobj.file);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, file);
+    }
 
 }
