@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  database:
+    container_name: database
+    image: 'postgres:latest'
+    restart: on-failure
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=pass
+        - POSTGRES_DB=postgres
+    volumes:
+      - ./database-data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+  filesharingapp:
+    container_name: filesharingapp
+    image: 'filesharingapp:0.0.1-snapshot'
+    restart: on-failure
+    ports:
+      - "8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+    depends_on:
+      - database
+
+
+
