@@ -6,24 +6,23 @@ services:
     image: 'postgres:latest'
     restart: on-failure
     environment:
-        - POSTGRES_USER=postgres
-        - POSTGRES_PASSWORD=pass
-        - POSTGRES_DB=postgres
-    volumes:
-      - ./database-data:/var/lib/postgresql/data/
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=postgres
     ports:
       - "5432:5432"
 
   filesharingapp:
     container_name: filesharingapp
-    image: 'filesharingapp:0.0.1-snapshot'
+    image: 'filesharingapp:1.0'
     restart: on-failure
     ports:
       - "8081"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_LIQUIBASE_USER=postgres
+      - SPRING_LIQUIBASE_PASSWORD=pass
+      - SPRING_LIQUIBASE_DEFAULT-SCHEMA=public
     depends_on:
       - database
-
-
-

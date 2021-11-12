@@ -13,6 +13,8 @@ import java.util.Optional;
 @Repository
 public interface FileRepository extends JpaRepository<File, Long> {
 
+    //  TODO: должен находить только файл, принадлежащий определенному айди, как метод ниже
+
     Optional<File> findFileByNameEquals(String filename);
 
     // TODO: почитать про пэйджинг, что такое countQuery и запросы https://stackoverflow.com/questions/21549480/spring-data-fetch-join-with-paging-is-not-working

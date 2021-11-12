@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,9 +104,9 @@ public class FileServiceUnitTest {
     @Test
     void listFiles() {
         when(fileUtil.getFileOwnerUserCredentialsId()).thenReturn(1L);
-        Page<File> pageFile = new PageImpl<>(List.of(file));
+        Page<File> pageFile = new PageImpl<>(Arrays.asList(file));
         when(fileRepository.findFilesByUserCredentialsId(anyLong(), any())).thenReturn(pageFile);
-        Page<Object> pageObject = new PageImpl<>(List.of(new Object()));
+        Page<Object> pageObject = new PageImpl<>(Arrays.asList(new Object()));
         when(mapperUtil.mapEntityPageIntoDtoPage(any(), any())).thenReturn(pageObject);
 
         fileService.listFiles(Optional.empty(), Optional.empty(), Optional.of(3));

@@ -12,7 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.io.FileNotFoundException;
 
 
-@Sql({"/sql/insertUserCredentials.sql","/sql/insertFile.sql"})
+@Sql({"/sql/insertFile.sql"})
 public class FileRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
 
     @Autowired

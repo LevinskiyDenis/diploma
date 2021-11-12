@@ -6,11 +6,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
-@Sql(scripts = "/sql/insertUserCredentials.sql")
+
 public class UserCredentialsRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
 
     @Autowired

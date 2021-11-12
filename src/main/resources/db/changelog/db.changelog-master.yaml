@@ -3,5 +3,5 @@ databaseChangeLog:
       file: migrations/001-schema.sql
       relativeToChangelogFile: true
   - include:
-      file: migrations/002-schema.sql
+      file: migrations/002-initdata.sql
       relativeToChangelogFile: true
