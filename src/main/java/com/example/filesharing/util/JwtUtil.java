@@ -33,7 +33,6 @@ public class JwtUtil {
     public <T> T extractClaim(String token, Function<Claims, T> claimsExtractor) {
         final Claims claims = extractAllClaims(token);
         return claimsExtractor.apply(claims);
-        // на вход получает Claims, а на выходе любой результат, который возвращает переопределенный метод apply
     }
 
     public Claims extractAllClaims(String token) {

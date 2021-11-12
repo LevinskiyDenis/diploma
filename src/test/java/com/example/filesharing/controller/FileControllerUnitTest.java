@@ -23,10 +23,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -120,9 +122,6 @@ public class FileControllerUnitTest {
 
     @Test
     void listFiles() throws Exception {
-
-        // TODO: можно как-то через стримы-лямбды нагенерить больше дто
-
         FileDto fileDto = new FileDto(1L, "file", 10L, MediaType.TEXT_PLAIN_VALUE, LocalDateTime.now());
 
         Page<FileDto> page = new PageImpl<>(Arrays.asList(fileDto));

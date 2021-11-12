@@ -40,18 +40,17 @@ public class FileService {
     }
 
     public File getFile(String filename) throws FileNotFoundException {
-        return fileRepository.findFileByNameEquals(filename).orElseThrow(FileNotFoundException::new);
+        return fileRepository.findFileByNameEquals(fileUtil.getFileOwnerUserCredentialsId(), filename).orElseThrow(FileNotFoundException::new);
     }
 
     @Transactional
     public void deleteFile(String filename) throws FileNotFoundException {
-        File file = fileRepository.findFileByNameEquals(filename).orElseThrow(FileNotFoundException::new);
+        File file = fileRepository.findFileByNameEquals(fileUtil.getFileOwnerUserCredentialsId(), filename).orElseThrow(FileNotFoundException::new);
         fileRepository.deleteById(file.getId());
-        // https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread
     }
 
     public void editFilename(String oldFilename, EditNameRequest editNameRequest) throws FileNotFoundException {
-        File file = fileRepository.findFileByNameEquals(oldFilename).orElseThrow(FileNotFoundException::new);
+        File file = fileRepository.findFileByNameEquals(fileUtil.getFileOwnerUserCredentialsId(), oldFilename).orElseThrow(FileNotFoundException::new);
         File withNewFilename = fileUtil.editFilename(file, editNameRequest.getNewFilename());
         fileRepository.saveAndFlush(withNewFilename);
     }

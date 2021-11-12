@@ -9,15 +9,13 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pass
       - POSTGRES_DB=postgres
-    ports:
-      - "5432:5432"
 
   filesharingapp:
     container_name: filesharingapp
-    image: 'filesharingapp:1.0'
+    image: 'filesharingapp:latest'
     restart: on-failure
     ports:
-      - "8081"
+      - "8081:8081"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
       - SPRING_LIQUIBASE_URL=jdbc:postgresql://database:5432/postgres

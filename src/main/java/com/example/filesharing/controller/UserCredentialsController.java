@@ -38,10 +38,6 @@ public class UserCredentialsController {
         this.jwtBlackListService = jwtBlackListService;
     }
 
-    // не работает метод пост, пишут, что нужно в вебсекьюрит конфиг отключить csrf, но непонятно, почему мы отключаем,
-    // если это охраняет нас от атаки
-    //https://blog.jdriven.com/2014/10/stateless-spring-security-part-1-stateless-csrf-protection/
-
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest authRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword()));

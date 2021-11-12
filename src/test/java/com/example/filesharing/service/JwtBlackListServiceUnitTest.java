@@ -3,7 +3,6 @@ package com.example.filesharing.service;
 import com.example.filesharing.entity.JwtBlackListEntity;
 import com.example.filesharing.repository.JwtBlackListRepository;
 import com.example.filesharing.util.JwtUtil;
-import io.jsonwebtoken.lang.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,9 +11,10 @@ import org.mockito.Mock;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.*;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class JwtBlackListServiceUnitTest {
 

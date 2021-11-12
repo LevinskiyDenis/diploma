@@ -49,28 +49,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Логика ошибок
-        // UnsupportedJwtException – if the claimsJws argument does not represent an Claims JWS
-        // MalformedJwtException – if the claimsJws string is not a valid JWS
-        // SignatureException – if the claimsJws JWS signature validation fails
-        // ExpiredJwtException – if the specified JWT is a Claims JWT and the Claims has an expiration time before the time this method is invoked.
-        // IllegalArgumentException – if the claimsJws string is null or empty or only whitespace
-
         if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
             UserDetails userDetails = userCredentialsService.loadUserByUsername(login);
 
-            // ему не нужно знать пароль. Он получает данные из хедера и пейлоад, при экстракции генерирует при
-            // помощи секрета сигначер. И смотрит, совпадает ли сигначер из хедера со сгенерированной сигначер
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-            // в аутентикейшн токен ставим дополнительную инфо из сервлетзапроса (айпи и прочие нюансы)
             usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
-            // говорит, что это пользователя нужно аутентифицировать
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-
         }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);

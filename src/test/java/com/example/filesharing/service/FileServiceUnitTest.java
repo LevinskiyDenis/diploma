@@ -8,20 +8,21 @@ import com.example.filesharing.util.FileUtil;
 import com.example.filesharing.util.MapperUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.data.domain.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.*;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 
 public class FileServiceUnitTest {
@@ -72,31 +73,31 @@ public class FileServiceUnitTest {
 
     @Test
     void getFile() throws FileNotFoundException {
-        when(fileRepository.findFileByNameEquals(anyString())).thenReturn(Optional.of(file));
+        when(fileRepository.findFileByNameEquals(anyLong(), anyString())).thenReturn(Optional.of(file));
 
         fileService.getFile(file.getName());
 
-        verify(fileRepository, times(1)).findFileByNameEquals(anyString());
+        verify(fileRepository, times(1)).findFileByNameEquals(anyLong(), anyString());
     }
 
     @Test
     void deleteFile() throws FileNotFoundException {
-        when(fileRepository.findFileByNameEquals(anyString())).thenReturn(Optional.of(file));
+        when(fileRepository.findFileByNameEquals(anyLong(), anyString())).thenReturn(Optional.of(file));
 
         fileService.deleteFile(file.getName());
 
-        verify(fileRepository, times(1)).findFileByNameEquals(anyString());
+        verify(fileRepository, times(1)).findFileByNameEquals(anyLong(), anyString());
         verify(fileRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
     void editFilename() throws FileNotFoundException {
-        when(fileRepository.findFileByNameEquals(anyString())).thenReturn(Optional.of(file));
+        when(fileRepository.findFileByNameEquals(anyLong(), anyString())).thenReturn(Optional.of(file));
         when(fileUtil.editFilename(any(), anyString())).thenReturn(file);
 
         fileService.editFilename("oldname", new EditNameRequest("newname"));
 
-        verify(fileRepository, times(1)).findFileByNameEquals(any());
+        verify(fileRepository, times(1)).findFileByNameEquals(anyLong(), anyString());
         verify(fileUtil, times(1)).editFilename(any(), anyString());
         verify(fileRepository, times(1)).saveAndFlush(any());
     }

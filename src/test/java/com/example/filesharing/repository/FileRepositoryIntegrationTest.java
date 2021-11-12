@@ -19,27 +19,26 @@ public class FileRepositoryIntegrationTest extends AbstractRepositoryIntegration
     FileRepository fileRepository;
 
     @Test
-    public void getFileByNameEquals() throws FileNotFoundException {
+    public void findFileByNameEquals() throws FileNotFoundException {
         File expectedFile = new File();
         expectedFile.setName("myimage");
         expectedFile.setSize(222000);
         expectedFile.setMimetype("image/png");
         expectedFile.setFile(new byte[]{49, 50, 51, 52});
 
-        File actualFile = fileRepository.findFileByNameEquals("myimage").orElseThrow(FileNotFoundException::new);
+        File actualFile = fileRepository.findFileByNameEquals(1L, "myimage").orElseThrow(FileNotFoundException::new);
 
         Assertions.assertThat(actualFile).usingRecursiveComparison().ignoringFields("id", "lastedited", "userCredentials").isEqualTo(expectedFile);
     }
 
 
     @Test
-    public void findByUserCredentialsId(){
+    public void findFilesByUserCredentialsId() {
 
         Long expectedNumOfElements = 3L;
         Long actualNumOfElements = fileRepository.findFilesByUserCredentialsId(1L, PageRequest.ofSize(10)).getTotalElements();
         Assert.assertEquals(expectedNumOfElements, actualNumOfElements);
 
     }
-
 
 }
