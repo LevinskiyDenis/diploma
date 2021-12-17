@@ -8,8 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class MapperUtil {
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    public MapperUtil(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     public <T, D> Page<D> mapEntityPageIntoDtoPage(Page<T> entities, Class<D> dtoClass) {
         Page<D> map = entities.map(objectEntity -> modelMapper.map(objectEntity, dtoClass));

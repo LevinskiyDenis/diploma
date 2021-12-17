@@ -20,11 +20,10 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    UserCredentialsService userCredentialsService;
-    JwtBlackListService jwtBlackListService;
-    JwtUtil jwtUtil;
+    private final UserCredentialsService userCredentialsService;
+    private final JwtBlackListService jwtBlackListService;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
     public JwtRequestFilter(UserCredentialsService userCredentialsService, JwtBlackListService jwtBlackListService, JwtUtil jwtUtil) {
         this.userCredentialsService = userCredentialsService;
         this.jwtBlackListService = jwtBlackListService;

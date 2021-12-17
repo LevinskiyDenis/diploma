@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 
 public class UserCredentialsService implements UserDetailsService {
 
-    UserCredentialsRepository userCredentialsRepository;
+    private final UserCredentialsRepository userCredentialsRepository;
 
-    @Autowired
     public UserCredentialsService(UserCredentialsRepository userCredentialsRepository) {
         this.userCredentialsRepository = userCredentialsRepository;
     }

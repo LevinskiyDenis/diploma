@@ -17,13 +17,13 @@ public class JwtBlackListEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    String jwt;
+    private String jwt;
 
     @Column(nullable = false)
-    Long exp;
+    private Long exp;
 
     public JwtBlackListEntity(String jwt, Long exp) {
         this.jwt = jwt;

@@ -3,6 +3,10 @@ package com.example.filesharing.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,13 +18,15 @@ import java.util.function.Function;
 
 @Component
 @PropertySource("classpath:application.properties")
+@Getter
+@Setter
 
 public class JwtUtil {
 
-    final int EXPIRATION = 43200000; // 12 hours
+    private final int EXPIRATION = 43200000; // 12 hours
 
     @Value("${jwt.secret.value}")
-    String secret;
+    private String secret;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

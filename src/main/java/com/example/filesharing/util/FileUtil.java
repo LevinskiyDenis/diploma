@@ -14,8 +14,11 @@ import java.time.LocalDateTime;
 @Component
 public class FileUtil {
 
-    @Autowired
-    UserCredentialsService userCredentialsService;
+    private final UserCredentialsService userCredentialsService;
+
+    public FileUtil(UserCredentialsService userCredentialsService) {
+        this.userCredentialsService = userCredentialsService;
+    }
 
     public File createFileFromRequest(String filename, MultipartFile multipartFile) throws IOException {
         File file = new File();

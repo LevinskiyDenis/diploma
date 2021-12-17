@@ -22,14 +22,15 @@ import java.util.Optional;
 
 public class FileService {
 
-    @Autowired
-    FileRepository fileRepository;
+    private final FileRepository fileRepository;
+    private final FileUtil fileUtil;
+    private final MapperUtil mapperUtil;
 
-    @Autowired
-    FileUtil fileUtil;
-
-    @Autowired
-    MapperUtil mapperUtil;
+    public FileService(FileRepository fileRepository, FileUtil fileUtil, MapperUtil mapperUtil) {
+        this.fileRepository = fileRepository;
+        this.fileUtil = fileUtil;
+        this.mapperUtil = mapperUtil;
+    }
 
     public FileDto uploadFile(String filename, MultipartFile multipartFile) throws IOException {
         File file = fileUtil.createFileFromRequest(filename, multipartFile);
@@ -43,7 +44,7 @@ public class FileService {
         return fileRepository.findFileByNameEquals(fileUtil.getFileOwnerUserCredentialsId(), filename).orElseThrow(FileNotFoundException::new);
     }
 
-    @Transactional
+//    @Transactional
     public void deleteFile(String filename) throws FileNotFoundException {
         File file = fileRepository.findFileByNameEquals(fileUtil.getFileOwnerUserCredentialsId(), filename).orElseThrow(FileNotFoundException::new);
         fileRepository.deleteById(file.getId());
@@ -57,11 +58,8 @@ public class FileService {
 
     public Page<FileDto> listFiles(Optional<String> sort, Optional<Integer> page, Optional<Integer> limit) {
         Long userCredentialsId = fileUtil.getFileOwnerUserCredentialsId();
-
         PageRequest pageRequest = PageRequest.of(page.orElse(0), limit.orElse(10), Sort.Direction.ASC, sort.orElse("id"));
-
         Page<File> pageFile = fileRepository.findFilesByUserCredentialsId(userCredentialsId, pageRequest);
-
         return mapperUtil.mapEntityPageIntoDtoPage(pageFile, FileDto.class);
     }
 

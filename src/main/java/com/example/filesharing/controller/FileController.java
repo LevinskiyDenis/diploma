@@ -23,9 +23,8 @@ import java.util.Optional;
 
 public class FileController {
 
-    FileService fileService;
+    private final FileService fileService;
 
-    @Autowired
     public FileController(FileService fileService) {
         this.fileService = fileService;
     }

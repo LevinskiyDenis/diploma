@@ -18,10 +18,9 @@ import java.security.SecureRandom;
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    UserCredentialsService userCredentialsService;
-    JwtRequestFilter jwtRequestFilter;
+    private final UserCredentialsService userCredentialsService;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
     public WebSecurityConfig(UserCredentialsService userCredentialsService, JwtRequestFilter jwtRequestFilter) {
         this.userCredentialsService = userCredentialsService;
         this.jwtRequestFilter = jwtRequestFilter;

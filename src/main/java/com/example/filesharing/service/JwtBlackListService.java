@@ -12,7 +12,6 @@ public class JwtBlackListService {
     private final JwtBlackListRepository jwtBlackListRepository;
     private final JwtUtil jwtUtil;
 
-    @Autowired
     public JwtBlackListService(JwtBlackListRepository jwtBlackListRepository, JwtUtil jwtUtil) {
         this.jwtBlackListRepository = jwtBlackListRepository;
         this.jwtUtil = jwtUtil;

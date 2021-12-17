@@ -30,7 +30,6 @@ public class UserCredentialsController {
     private final UserCredentialsService userCredentialsService;
     private final JwtBlackListService jwtBlackListService;
 
-    @Autowired
     public UserCredentialsController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserCredentialsService userCredentialsService, JwtBlackListService jwtBlackListService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
