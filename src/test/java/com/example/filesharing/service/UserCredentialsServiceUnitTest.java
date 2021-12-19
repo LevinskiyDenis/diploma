@@ -1,12 +1,19 @@
 package com.example.filesharing.service;
 
+import com.example.filesharing.entity.JwtBlackListEntity;
 import com.example.filesharing.entity.UserCredentials;
+import com.example.filesharing.model.AuthRequest;
+import com.example.filesharing.model.AuthResponse;
 import com.example.filesharing.repository.UserCredentialsRepository;
+import com.example.filesharing.util.JwtUtil;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
@@ -26,50 +33,45 @@ public class UserCredentialsServiceUnitTest {
     @Mock
     UserCredentialsRepository userCredentialsRepository;
 
+    @Mock
+    JwtBlackListService jwtBlackListService;
+
+    @Mock
+    AuthenticationManager authenticationManager;
+
+    @Mock
+    JwtUtil jwtUtil;
+
     @BeforeEach
     void setUp() {
         openMocks(this);
     }
 
     @Test
-    void loadUserByUsername() {
-        UserDetails userDetailsExpected = new UserCredentials(1L, "Denis", "pass", true, true, true, true);
-        when(userCredentialsRepository.findUserDetailsByUsernameEquals(anyString())).thenReturn(java.util.Optional.of(userDetailsExpected));
+    void authenticate(){
+        AuthResponse authResponseExpected = new AuthResponse("thisisyourjwt");
+        when(jwtUtil.generateToken(anyString())).thenReturn("thisisyourjwt");
 
-        userCredentialsService.loadUserByUsername(anyString());
+        AuthResponse authResponse = userCredentialsService.authenticate(new AuthRequest("login", "pass"));
 
-        verify(userCredentialsRepository, times(1)).findUserDetailsByUsernameEquals(any());
-    }
-
-    @Test
-    void loadUserByUsername_UsernameNotFoundException() {
-
-        when(userCredentialsRepository.findUserDetailsByUsernameEquals(anyString())).thenReturn(Optional.empty());
-
-        assertThrows(UsernameNotFoundException.class,
-
-                () -> {
-                    userCredentialsService.loadUserByUsername(anyString());
-                }
-
-        );
-
+        verify(authenticationManager, times(1)).authenticate(any());
+        Assertions.assertEquals(authResponseExpected.getAuthToken(), authResponse.getAuthToken());
     }
 
     @Test
     void loadUserCredentialsByUsername() {
         UserCredentials userCredentialsExpected = new UserCredentials(1L, "Denis", "pass", true, true, true, true);
-        when(userCredentialsRepository.findUserCredentialsByUsernameEquals(anyString())).thenReturn(Optional.of(userCredentialsExpected));
+        when(userCredentialsRepository.findUserCredentialsWithRoleByUsernameEquals(anyString())).thenReturn(Optional.of(userCredentialsExpected));
 
         userCredentialsService.loadUserCredentialsByUsername(anyString());
 
-        verify(userCredentialsRepository, times(1)).findUserCredentialsByUsernameEquals(anyString());
+        verify(userCredentialsRepository, times(1)).findUserCredentialsWithRoleByUsernameEquals(anyString());
     }
 
     @Test
     void loadUserCredentialsByUsername_UsernameNotFoundException() {
 
-        when(userCredentialsRepository.findUserCredentialsByUsernameEquals(anyString())).thenReturn(Optional.empty());
+        when(userCredentialsRepository.findUserCredentialsWithRoleByUsernameEquals(anyString())).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class,
                 () -> {

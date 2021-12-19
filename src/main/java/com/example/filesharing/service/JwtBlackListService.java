@@ -3,7 +3,6 @@ package com.example.filesharing.service;
 import com.example.filesharing.entity.JwtBlackListEntity;
 import com.example.filesharing.repository.JwtBlackListRepository;
 import com.example.filesharing.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

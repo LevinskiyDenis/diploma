@@ -3,18 +3,27 @@ package com.example.filesharing.controller;
 import com.example.filesharing.entity.JwtBlackListEntity;
 import com.example.filesharing.entity.Role;
 import com.example.filesharing.entity.UserCredentials;
+import com.example.filesharing.model.AuthRequest;
+import com.example.filesharing.model.AuthResponse;
+import com.example.filesharing.model.UserDetailsImpl;
 import com.example.filesharing.service.JwtBlackListService;
 import com.example.filesharing.service.UserCredentialsService;
+import com.example.filesharing.service.UserDetailsServiceImpl;
 import com.example.filesharing.util.JwtUtil;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -37,15 +46,15 @@ public class UserCredentialsControllerUnitTest {
     UserCredentialsService userCredentialsService;
 
     @MockBean
+    UserDetailsServiceImpl userDetailsServiceImpl;
+
+    @MockBean
     JwtBlackListService jwtBlackListService;
 
     @Test
     void login_with_wrong_credentials() throws Exception {
 
-        Role role = new Role(1L, "USER");
-        UserDetails userDetails = new UserCredentials(1L, "denis", "$2a$10$16B7PJ4TXPHpFXl4pOmI2.aL/3RmDdP6WDdO2HHCjI2ui7Xzng3wC", role, true, true, true, true);
-        when(userCredentialsService.loadUserByUsername(Mockito.anyString())).thenReturn(userDetails);
-        when(jwtUtil.generateToken(Mockito.any(UserDetails.class))).thenReturn("thisisyourjwt");
+        when(userCredentialsService.authenticate(any(AuthRequest.class))).thenThrow(BadCredentialsException.class);
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -57,10 +66,7 @@ public class UserCredentialsControllerUnitTest {
     @Test
     void login_with_right_credentials() throws Exception {
 
-        Role role = new Role(1L, "USER");
-        UserDetails userDetails = new UserCredentials(1L, "denis", "$2a$10$16B7PJ4TXPHpFXl4pOmI2.aL/3RmDdP6WDdO2HHCjI2ui7Xzng3wC", role, true, true, true, true);
-        when(userCredentialsService.loadUserByUsername(anyString())).thenReturn(userDetails);
-        when(jwtUtil.generateToken(Mockito.any(UserDetails.class))).thenReturn("thisisyourjwt");
+        when(userCredentialsService.authenticate(any(AuthRequest.class))).thenReturn(new AuthResponse("thisisyourjwt"));
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -74,15 +80,13 @@ public class UserCredentialsControllerUnitTest {
     @WithMockUser
     void logout() throws Exception {
 
-        JwtBlackListEntity jwt = new JwtBlackListEntity(1L, "thisisjwt", System.currentTimeMillis());
-        when(jwtBlackListService.saveInBlackList(anyString())).thenReturn(jwt);
+        when(userCredentialsService.logout(any(HttpServletRequest.class), any(HttpServletResponse.class), anyString())).thenReturn(true);
 
         mockMvc.perform(post("/logout")
                         .header("auth-token", "Bearer jwt"))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(jwtBlackListService, times(1)).saveInBlackList(anyString());
     }
 
 }

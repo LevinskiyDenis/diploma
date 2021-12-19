@@ -3,7 +3,6 @@ package com.example.filesharing.util;
 import com.example.filesharing.entity.File;
 import com.example.filesharing.entity.UserCredentials;
 import com.example.filesharing.service.UserCredentialsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

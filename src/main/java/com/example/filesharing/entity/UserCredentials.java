@@ -5,16 +5,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
-public class UserCredentials implements UserDetails {
+@NoArgsConstructor
+public class UserCredentials {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,39 +65,8 @@ public class UserCredentials implements UserDetails {
         Enabled = enabled;
     }
 
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return this.AccountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.AccountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return this.CredentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.Enabled;
-    }
-
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority(role.getRolename()));
+        return Collections.singletonList(new SimpleGrantedAuthority(role.getRolename()));
     }
 
     @Override

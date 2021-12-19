@@ -6,11 +6,9 @@ import com.example.filesharing.model.EditNameRequest;
 import com.example.filesharing.repository.FileRepository;
 import com.example.filesharing.util.FileUtil;
 import com.example.filesharing.util.MapperUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
@@ -44,7 +42,6 @@ public class FileService {
         return fileRepository.findFileByNameEquals(fileUtil.getFileOwnerUserCredentialsId(), filename).orElseThrow(FileNotFoundException::new);
     }
 
-//    @Transactional
     public void deleteFile(String filename) throws FileNotFoundException {
         File file = fileRepository.findFileByNameEquals(fileUtil.getFileOwnerUserCredentialsId(), filename).orElseThrow(FileNotFoundException::new);
         fileRepository.deleteById(file.getId());

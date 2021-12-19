@@ -6,6 +6,7 @@ import com.example.filesharing.model.AuthResponse;
 import com.example.filesharing.service.JwtBlackListService;
 import com.example.filesharing.service.UserCredentialsService;
 import com.example.filesharing.util.JwtUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,43 +26,26 @@ import javax.servlet.http.HttpServletResponse;
 
 public class UserCredentialsController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
     private final UserCredentialsService userCredentialsService;
-    private final JwtBlackListService jwtBlackListService;
 
-    public UserCredentialsController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserCredentialsService userCredentialsService, JwtBlackListService jwtBlackListService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
+    public UserCredentialsController(UserCredentialsService userCredentialsService) {
         this.userCredentialsService = userCredentialsService;
-        this.jwtBlackListService = jwtBlackListService;
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest authRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword()));
-        final String jwt = jwtUtil.generateToken(userCredentialsService.loadUserByUsername(authRequest.getLogin()));
-        return ResponseEntity.ok(new AuthResponse(jwt));
+        return ResponseEntity.ok(userCredentialsService.authenticate(authRequest));
     }
 
     @PostMapping(value = "/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response, @RequestHeader("auth-token") String authTokenHeader) {
 
-        String jwt = authTokenHeader.split(" ")[1];
-
-        JwtBlackListEntity jwtBlackListEntity = jwtBlackListService.saveInBlackList(jwt); // сохранили в базе логаученный jwt
-
-        if (jwtBlackListEntity == null) {
+        if (userCredentialsService.logout(request, response, authTokenHeader)) {
+            return ResponseEntity.ok("Successful logout");
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-        }
-
-        return ResponseEntity.ok("Successful logout");
     }
 
 

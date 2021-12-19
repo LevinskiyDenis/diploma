@@ -1,8 +1,7 @@
 package com.example.filesharing.config;
 
 import com.example.filesharing.filter.JwtRequestFilter;
-import com.example.filesharing.service.UserCredentialsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.filesharing.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,17 +17,17 @@ import java.security.SecureRandom;
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserCredentialsService userCredentialsService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final JwtRequestFilter jwtRequestFilter;
 
-    public WebSecurityConfig(UserCredentialsService userCredentialsService, JwtRequestFilter jwtRequestFilter) {
-        this.userCredentialsService = userCredentialsService;
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl, JwtRequestFilter jwtRequestFilter) {
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.jwtRequestFilter = jwtRequestFilter;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userCredentialsService).passwordEncoder(bCryptPasswordEncoder());
+        auth.userDetailsService(userDetailsServiceImpl).passwordEncoder(bCryptPasswordEncoder());
     }
 
     @Override

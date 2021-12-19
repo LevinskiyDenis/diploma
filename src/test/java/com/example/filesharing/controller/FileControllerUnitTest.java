@@ -6,6 +6,7 @@ import com.example.filesharing.filter.JwtRequestFilter;
 import com.example.filesharing.model.EditNameRequest;
 import com.example.filesharing.service.FileService;
 import com.example.filesharing.service.UserCredentialsService;
+import com.example.filesharing.service.UserDetailsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class FileControllerUnitTest {
     FileService fileService;
 
     @MockBean
-    UserCredentialsService userCredentialsService;
+    UserDetailsServiceImpl userDetailsServiceimpl;
 
     @MockBean
     JwtRequestFilter jwtRequestFilter;

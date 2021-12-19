@@ -1,18 +1,17 @@
 package com.example.filesharing.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
-@ToString
+@NoArgsConstructor
 public class File {
 
     @Id
@@ -45,12 +44,12 @@ public class File {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         File fileobj = (File) o;
-        return name.equals(fileobj.name) && file.equals(fileobj.file);
+        return name.equals(fileobj.name) && Arrays.equals(file, fileobj.file);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, file);
+        return Objects.hash(name, Arrays.hashCode(file));
     }
 
 }
